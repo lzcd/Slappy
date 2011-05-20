@@ -19,6 +19,14 @@ namespace Tests
         }
 
         [TestMethod]
+        public void CanSetAndGetValueByIndex()
+        {
+            dynamic one = new Node();
+            one["People"]["Gerald"]["Age"] = 34;
+            Assert.AreEqual(34, one["People"]["Gerald"]["Age"]);
+        }
+
+        [TestMethod]
         public void CanSetMergeAndGetValue()
         {
             dynamic one = new Node();

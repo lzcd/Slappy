@@ -15,12 +15,13 @@ namespace Slappy
             valueByPath = new Dictionary<string, object>();
         }
 
-        private Node parent;
+        protected Node Parent { get; private set; }
+
         private string name;
-        
+
         protected Node(Node parent, string name)
         {
-            this.parent = parent;
+            Parent = parent;
             this.name = name;
         }
 
@@ -30,27 +31,8 @@ namespace Slappy
             {
                 result = new Node(this, binder.Name);
             }
-            
+
             return true;
-        }
-
-        
-
-        protected bool TryGetValue(string path, out Object value)
-        {
-            if (parent == null)
-            {
-                if (valueByPath.TryGetValue(path, out value))
-                {
-                    return true;
-                }
-
-                return false;
-            }
-            else
-            {
-                return parent.TryGetValue(name + "/" + path, out value);  
-            }
         }
 
         public override bool TrySetMember(SetMemberBinder binder, object value)
@@ -58,18 +40,83 @@ namespace Slappy
             return TrySetValue(binder.Name, value);
         }
 
-       
-        protected bool TrySetValue(string path, Object value)
+        protected bool TryGetValue(string path, out Object value)
         {
-            if (parent == null)
+            if (Parent != null)
             {
-                valueByPath[path] = value;
-            }
-            else
-            {
-                return parent.TrySetValue(name + "/" + path, value);
+                return Parent.TryGetValue(name + "/" + path, out value);
             }
 
+            if (valueByPath.TryGetValue(path, out value))
+            {
+                return true;
+            }
+            return false;
+        }
+
+        protected bool TrySetValue(string path, Object value)
+        {
+            if (Parent != null)
+            {
+                return Parent.TrySetValue(name + "/" + path, value);
+            }
+
+            valueByPath[path] = value;
+            return true;
+        }
+
+        public override bool TryGetIndex(GetIndexBinder binder, object[] indexes, out object result)
+        {
+            //if (!TryGetValue(indexes, out result))
+            //{
+            //    dynamic current = FindRootNode();
+            //    foreach (var index in indexes)
+            //    {
+            //        current = current[index];
+            //    }
+            //    result = current;
+            //}
+
+            return true;
+        }
+
+        private Node FindRootNode()
+        {
+            var parent = this;
+            while (parent.Parent != null)
+            {
+                parent = parent.Parent;
+            }
+
+            return parent;
+        }
+
+        public override bool TrySetIndex(SetIndexBinder binder, object[] indexes, object value)
+        {
+            return TrySetValue(indexes, value);
+        }
+
+        protected bool TryGetValue(object[] indexes, out object value)
+        {
+            if (Parent != null)
+            {
+                return Parent.TryGetValue(indexes, out value);
+            }
+
+            var path = string.Join("/", indexes);
+            
+            return valueByPath.TryGetValue(path, out value);
+        }
+
+        protected bool TrySetValue(object[] indexes, object value)
+        {
+            if (Parent != null)
+            {
+                return Parent.TrySetValue(indexes, value);
+            }
+
+            var path = string.Join("/", indexes);
+            valueByPath[path] = value;
             return true;
         }
 

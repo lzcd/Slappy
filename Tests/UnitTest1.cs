@@ -29,14 +29,19 @@ namespace Tests
         [TestMethod]
         public void CanSetMergeAndGetValue()
         {
-            dynamic one = new Node();
-            one.People.Gerald.Age = 34;
-            dynamic two = new Node();
-            two.Pets.Fido.Age = 5;
+            dynamic bobs = new Node();
+            bobs.Recipe.Eggs.Count = 5;
+            bobs.Commit();
 
-            dynamic three = Node.Merge(one, two);
-            Assert.AreEqual(34, three.People.Gerald.Age);
-            Assert.AreEqual(5, three.Pets.Fido.Age);
+            dynamic alices = bobs.Clone();
+            alices.Recipe.Butter.Amount = 4;
+            alices.Recipe.Eggs.Count = 3;
+            alices.Commit();
+
+            bobs.Recipe.Salt.Amount = 7;
+            bobs.Commit();
+
+            
         }
 
     }

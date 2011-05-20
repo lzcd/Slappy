@@ -16,9 +16,7 @@ namespace Slappy
         }
 
         protected Node Parent { get; private set; }
-
         private string name;
-        private object[] indexes;
 
         protected Node(Node parent, string name)
         {
@@ -128,9 +126,6 @@ namespace Slappy
         }
 
 
-        public static Node Merge(dynamic one, dynamic two)
-        {
-            return new Node();
-        }
+       
     }
 }

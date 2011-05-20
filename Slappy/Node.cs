@@ -154,7 +154,7 @@ namespace Slappy
 
         public void Pull(Node other)
         {
-
+            throw new NotImplementedException();
         }
     }
 }

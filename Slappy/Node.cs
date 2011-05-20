@@ -24,6 +24,14 @@ namespace Slappy
             this.name = name;
         }
 
+        protected Node(Dictionary<string, object> valueByPath)
+        {
+            foreach (var pair in valueByPath)
+            {
+                this.valueByPath[pair.Key] = pair.Value;
+            }
+        }
+
         protected Node CreateNodeChain(object[] indexes)
         {
             var current = FindRootNode();
@@ -126,6 +134,10 @@ namespace Slappy
         }
 
 
-       
+        public Node Clone()
+        {
+            var clone = new Node(valueByPath);
+            return clone;
+        }
     }
 }

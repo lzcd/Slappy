@@ -18,11 +18,23 @@ namespace Slappy
         protected Node Parent { get; private set; }
 
         private string name;
+        private object[] indexes;
 
         protected Node(Node parent, string name)
         {
             Parent = parent;
             this.name = name;
+        }
+
+        protected Node CreateNodeChain(object[] indexes)
+        {
+            var current = FindRootNode();
+            foreach (var index in indexes)
+            {
+                current = new Node(current, index.ToString());
+            }
+
+            return current;
         }
 
         public override bool TryGetMember(GetMemberBinder binder, out object result)
@@ -67,15 +79,10 @@ namespace Slappy
 
         public override bool TryGetIndex(GetIndexBinder binder, object[] indexes, out object result)
         {
-            //if (!TryGetValue(indexes, out result))
-            //{
-            //    dynamic current = FindRootNode();
-            //    foreach (var index in indexes)
-            //    {
-            //        current = current[index];
-            //    }
-            //    result = current;
-            //}
+            if (!TryGetValue(indexes, out result))
+            {
+                result = CreateNodeChain(indexes);
+            }
 
             return true;
         }

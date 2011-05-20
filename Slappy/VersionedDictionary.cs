@@ -7,10 +7,9 @@ namespace Slappy
 {
     public class VersionedDictionary<keyType, valueType>
     {
-        private string id;
+        protected string id;
 
         public VersionedDictionary()
-            : this(Guid.NewGuid().ToString())
         {
 
         }
@@ -26,6 +25,10 @@ namespace Slappy
             : this()
         {
             Previous = previous;
+            if (previous.id == null)
+            {
+                id = Guid.NewGuid().ToString();
+            }
         }
 
         private Dictionary<keyType, valueType> valueByKey;

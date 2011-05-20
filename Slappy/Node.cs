@@ -24,7 +24,7 @@ namespace Slappy
             this.name = name;
         }
 
-        protected Node(Dictionary<string, object> valueByPath)
+        protected Node(Dictionary<string, object> valueByPath) : this()
         {
             foreach (var pair in valueByPath)
             {
@@ -53,7 +53,17 @@ namespace Slappy
             return true;
         }
 
+        protected bool TryGetValue(object[] indexes, out object value)
+        {
+            if (Parent != null)
+            {
+                return Parent.TryGetValue(indexes, out value);
+            }
 
+            var path = string.Join("/", indexes);
+
+            return TryGetValue(path, out value);
+        }
       
         protected bool TryGetValue(string path, out Object value)
         {
@@ -62,14 +72,9 @@ namespace Slappy
                 return Parent.TryGetValue(name + "/" + path, out value);
             }
 
-            if (valueByPath.TryGetValue(path, out value))
-            {
-                return true;
-            }
-            return false;
+            return valueByPath.TryGetValue(path, out value);
         }
 
-       
 
         public override bool TryGetIndex(GetIndexBinder binder, object[] indexes, out object result)
         {
@@ -93,17 +98,7 @@ namespace Slappy
         }
 
     
-        protected bool TryGetValue(object[] indexes, out object value)
-        {
-            if (Parent != null)
-            {
-                return Parent.TryGetValue(indexes, out value);
-            }
-
-            var path = string.Join("/", indexes);
-            
-            return valueByPath.TryGetValue(path, out value);
-        }
+       
 
         public override bool TrySetMember(SetMemberBinder binder, object value)
         {
@@ -113,6 +108,18 @@ namespace Slappy
         public override bool TrySetIndex(SetIndexBinder binder, object[] indexes, object value)
         {
             return TrySetValue(indexes, value);
+        }
+
+        protected bool TrySetValue(object[] indexes, object value)
+        {
+            if (Parent != null)
+            {
+                return Parent.TrySetValue(indexes, value);
+            }
+
+            var path = string.Join("/", indexes);
+            TrySetValue(path, value);
+            return true;
         }
 
         protected bool TrySetValue(string path, Object value)
@@ -126,24 +133,17 @@ namespace Slappy
             return true;
         }
 
-        protected bool TrySetValue(object[] indexes, object value)
-        {
-            if (Parent != null)
-            {
-                return Parent.TrySetValue(indexes, value);
-            }
-
-            var path = string.Join("/", indexes);
-            valueByPath[path] = value;
-            return true;
-        }
+      
 
         
 
         public Node Clone()
         {
-            var clone = new Node(valueByPath);
-            return clone;
+            return new Node(valueByPath);
+        }
+
+        public void Commit()
+        {
         }
     }
 }

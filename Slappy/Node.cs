@@ -53,11 +53,8 @@ namespace Slappy
             return true;
         }
 
-        public override bool TrySetMember(SetMemberBinder binder, object value)
-        {
-            return TrySetValue(binder.Name, value);
-        }
 
+      
         protected bool TryGetValue(string path, out Object value)
         {
             if (Parent != null)
@@ -72,16 +69,7 @@ namespace Slappy
             return false;
         }
 
-        protected bool TrySetValue(string path, Object value)
-        {
-            if (Parent != null)
-            {
-                return Parent.TrySetValue(name + "/" + path, value);
-            }
-
-            valueByPath[path] = value;
-            return true;
-        }
+       
 
         public override bool TryGetIndex(GetIndexBinder binder, object[] indexes, out object result)
         {
@@ -104,11 +92,7 @@ namespace Slappy
             return parent;
         }
 
-        public override bool TrySetIndex(SetIndexBinder binder, object[] indexes, object value)
-        {
-            return TrySetValue(indexes, value);
-        }
-
+    
         protected bool TryGetValue(object[] indexes, out object value)
         {
             if (Parent != null)
@@ -119,6 +103,27 @@ namespace Slappy
             var path = string.Join("/", indexes);
             
             return valueByPath.TryGetValue(path, out value);
+        }
+
+        public override bool TrySetMember(SetMemberBinder binder, object value)
+        {
+            return TrySetValue(binder.Name, value);
+        }
+
+        public override bool TrySetIndex(SetIndexBinder binder, object[] indexes, object value)
+        {
+            return TrySetValue(indexes, value);
+        }
+
+        protected bool TrySetValue(string path, Object value)
+        {
+            if (Parent != null)
+            {
+                return Parent.TrySetValue(name + "/" + path, value);
+            }
+
+            valueByPath[path] = value;
+            return true;
         }
 
         protected bool TrySetValue(object[] indexes, object value)
@@ -133,6 +138,7 @@ namespace Slappy
             return true;
         }
 
+        
 
         public Node Clone()
         {

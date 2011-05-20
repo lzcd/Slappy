@@ -34,6 +34,8 @@ namespace Slappy
             return true;
         }
 
+        
+
         protected bool TryGetValue(string path, out Object value)
         {
             if (parent == null)
@@ -56,6 +58,7 @@ namespace Slappy
             return TrySetValue(binder.Name, value);
         }
 
+       
         protected bool TrySetValue(string path, Object value)
         {
             if (parent == null)
@@ -68,6 +71,12 @@ namespace Slappy
             }
 
             return true;
+        }
+
+
+        public static Node Merge(dynamic one, dynamic two)
+        {
+            return new Node();
         }
     }
 }

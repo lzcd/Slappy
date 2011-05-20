@@ -11,11 +11,25 @@ namespace Tests
     public class UnitTest1
     {
         [TestMethod]
-        public void TestMethod1()
+        public void CanSetAndGetValue()
         {
             dynamic one = new Node();
             one.People.Gerald.Age = 34;
             Assert.AreEqual(34, one.People.Gerald.Age);
         }
+
+        [TestMethod]
+        public void CanSetMergeAndGetValue()
+        {
+            dynamic one = new Node();
+            one.People.Gerald.Age = 34;
+            dynamic two = new Node();
+            two.Pets.Fido.Age = 5;
+
+            dynamic three = Node.Merge(one, two);
+            Assert.AreEqual(34, three.People.Gerald.Age);
+            Assert.AreEqual(5, three.Pets.Fido.Age);
+        }
+
     }
 }

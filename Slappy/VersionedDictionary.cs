@@ -7,15 +7,23 @@ namespace Slappy
 {
     public class VersionedDictionary<keyType, valueType>
     {
+        private string id;
 
         public VersionedDictionary()
+            : this(Guid.NewGuid().ToString())
         {
 
+        }
+
+        protected VersionedDictionary(string id)
+        {
+            this.id = id;
         }
 
         public VersionedDictionary<keyType, valueType> Previous { get; private set; }
 
         public VersionedDictionary(VersionedDictionary<keyType, valueType> previous)
+            : this()
         {
             Previous = previous;
         }
@@ -62,24 +70,40 @@ namespace Slappy
             return false;
         }
 
+        public int CurrentVersionKeyCount
+        {
+            get
+            {
+                if (valueByKey == null)
+                {
+                    return 0;
+                }
+                return valueByKey.Keys.Count;
+            }
+        }
+
         public VersionedDictionary<keyType, valueType> Clone()
         {
-            var clone = new VersionedDictionary<keyType, valueType>();
-            var currentTarget = clone;
             var currentSource = this;
-           
+            var clone = new VersionedDictionary<keyType, valueType>(this);
+            var currentTarget = clone;
+            
+
             while (currentSource != null)
             {
-                foreach (var pair in currentSource.valueByKey)
+                if (currentSource.valueByKey != null)
                 {
-                    currentTarget[pair.Key] = pair.Value;
+                    foreach (var pair in currentSource.valueByKey)
+                    {
+                        currentTarget[pair.Key] = pair.Value;
+                    }
                 }
 
                 currentSource = currentSource.Previous;
                 if (currentSource != null)
                 {
                     var previousTarget = currentTarget;
-                    currentTarget = new VersionedDictionary<keyType, valueType>();
+                    currentTarget = new VersionedDictionary<keyType, valueType>(currentSource.id);
                     previousTarget.Previous = currentTarget;
                 }
             }

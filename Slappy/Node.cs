@@ -146,7 +146,15 @@ namespace Slappy
 
         public void Commit()
         {
-            
+            if (valueByPath.CurrentVersionKeyCount > 0)
+            {
+                valueByPath = new VersionedDictionary<string, object>(valueByPath);
+            }
+        }
+
+        public void Pull(Node other)
+        {
+
         }
     }
 }

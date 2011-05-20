@@ -41,7 +41,7 @@ namespace Tests
             bobs.Recipe.Salt.Amount = 7;
             bobs.Commit();
 
-            
+            bobs.Pull(alices);
         }
 
     }

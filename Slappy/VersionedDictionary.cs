@@ -5,9 +5,8 @@ using System.Text;
 
 namespace Slappy
 {
-    class VersionedDictionary<keyType, valueType>
+    public class VersionedDictionary<keyType, valueType>
     {
-        private Dictionary<keyType, valueType> valueByKey;
 
         public VersionedDictionary()
         {
@@ -20,6 +19,8 @@ namespace Slappy
         {
             Previous = previous;
         }
+
+        private Dictionary<keyType, valueType> valueByKey;
 
         public valueType this[keyType key]
         {
@@ -59,6 +60,31 @@ namespace Slappy
 
             value = default(valueType);
             return false;
+        }
+
+        public VersionedDictionary<keyType, valueType> Clone()
+        {
+            var clone = new VersionedDictionary<keyType, valueType>();
+            var currentTarget = clone;
+            var currentSource = this;
+           
+            while (currentSource != null)
+            {
+                foreach (var pair in currentSource.valueByKey)
+                {
+                    currentTarget[pair.Key] = pair.Value;
+                }
+
+                currentSource = currentSource.Previous;
+                if (currentSource != null)
+                {
+                    var previousTarget = currentTarget;
+                    currentTarget = new VersionedDictionary<keyType, valueType>();
+                    previousTarget.Previous = currentTarget;
+                }
+            }
+
+            return clone;
         }
     }
 }

@@ -8,13 +8,12 @@ namespace Slappy
 {
     public class Node : DynamicObject
     {
-        private Dictionary<string, object> valueByPath;
-        private Dictionary<string, object> pendingValueByPath;
+        private VersionedDictionary<string, object> valueByPath;
+      
 
         public Node()
         {
-            valueByPath = new Dictionary<string, object>();
-            pendingValueByPath = new Dictionary<string, object>();
+            valueByPath = new VersionedDictionary<string, object>();
         }
 
         protected Node Parent { get; private set; }
@@ -26,12 +25,9 @@ namespace Slappy
             this.name = name;
         }
 
-        protected Node(Dictionary<string, object> valueByPath) : this()
+        protected Node(VersionedDictionary<string, object> valueByPath) : this()
         {
-            foreach (var pair in valueByPath)
-            {
-                this.valueByPath[pair.Key] = pair.Value;
-            }
+            this.valueByPath = valueByPath.Clone();
         }
 
         protected Node CreateNodeChain(object[] indexes)
@@ -124,7 +120,7 @@ namespace Slappy
                 return Parent.TryGetValue(name + "/" + path, out value);
             }
 
-            if (pendingValueByPath.TryGetValue(path, out value))
+            if (valueByPath.TryGetValue(path, out value))
             {
                 return true;
             }
@@ -139,7 +135,7 @@ namespace Slappy
                 return Parent.TrySetValue(name + "/" + path, value);
             }
 
-            pendingValueByPath[path] = value;
+            valueByPath[path] = value;
             return true;
         }
 
